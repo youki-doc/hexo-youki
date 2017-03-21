@@ -1,0 +1,41 @@
+[begin
+	[define-macro [youki-article s $body] [begin
+		[load-library [path/join directories/loader "html"]]
+		[define section-meta [object [level 1] [count 0]]]
+		[define [proper-head] [apply [part tags [& "h" section-meta/level]] ##]]
+		[define [proper-head-for-embedded] [apply [part tags [+ [& "h" section-meta/level] 1]] ##]]
+
+		[define current-article [object]]
+
+		[define-macro [section $title $content] [begin
+			[setf section-meta/level [+ section-meta/level 1]]
+			[define result [cond
+				[$content [begin 
+					[setf title [evaluate $title]]
+					[setf title-id [ssub [& "" title] [regex {:[^a-zA-Z0-9\-\u0080-\uffff]+:} "g"] "-"]]
+					[tags/section {
+						[proper-head :id [& "section-" title-id] [& title [tags/a :href [& current-article/html-url "#section-" title-id] :class "handle" {[span :class "h"]{(}#[span :class "h"]{)}}]]]
+						[evaluate $content]
+					}]]]
+				[$title [tags/section [evaluate $title]]]
+			]]
+			[setf section-meta/level [- section-meta/level 1]]
+			result
+		]]
+
+		[define [figure src comment] [tags/figure {
+			[tags/img :src src]
+			[tags/figcaption comment]
+		}]]
+
+		[define s/section section]
+		[define s/figure figure]
+		[define s/current-article current-article]
+		
+		[define current-article/body [evaluate-in-scope s `[html-section ,$body]]]
+
+		{ [= current-article/body] }
+	]]
+
+	[export youki-article]
+]
