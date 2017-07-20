@@ -1,8 +1,9 @@
 {
   "name": "hexo-youki",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "main": "main.js",
   "dependencies": {
-    "object-assign": "^4.1.1"
+    "object-assign": "^4.1.1",
+	"youki": "^0.4.0"
   }
 }
